@@ -1,12 +1,12 @@
 /**
  * @file json.cc
  * @author Simone Ancona
- * @brief 
+ * @brief
  * @version 1.0
  * @date 2023-07-14
- * 
+ *
  * @copyright Copyright (c) 2023
- * 
+ *
  */
 
 #include "../include/json.hh"
@@ -43,6 +43,7 @@ Jpp::json_type_t Jpp::Json::get_type()
 
 Jpp::Json::Json()
 {
+    this->type = JSON_OBJECT;
 }
 
 Jpp::Json::~Json()
@@ -61,6 +62,30 @@ Jpp::Json::Json(std::any value, Jpp::json_type_t type)
     this->type = type;
 }
 
+Jpp::Json::Json(std::string str)
+{
+    this->value = str;
+    this->type = JSON_STRING;
+}
+
+Jpp::Json::Json(double num)
+{
+    this->value = num;
+    this->type = JSON_NUMBER;
+}
+
+Jpp::Json::Json(bool val)
+{
+    this->value = val;
+    this->type = JSON_BOOLEAN;
+}
+
+Jpp::Json::Json(nullptr_t null)
+{
+    this->value = null;
+    this->type = JSON_NULL;
+}
+
 std::any Jpp::Json::get_value()
 {
     return this->value;
@@ -74,15 +99,35 @@ std::map<std::string, Jpp::Json> Jpp::Json::get_children()
 Jpp::Json &Jpp::Json::operator[](size_t index)
 {
     if (this->type > JSON_OBJECT)
-        throw std::out_of_range("Cannot use the subscript operator with an atomic value");
+        throw std::out_of_range("Cannot use the subscript operator with an atomic value, use get_value");
     return this->children.at(std::to_string(index));
 }
 
 Jpp::Json &Jpp::Json::operator[](std::string property)
 {
     if (this->type > JSON_OBJECT)
-        throw std::out_of_range("Cannot use the subscript operator with an atomic value");
+        throw std::out_of_range("Cannot use the subscript operator with an atomic value, use get_value");
+    if (this->children.find(property) == this->children.end())
+        this->children[property] = Json(nullptr);
     return this->children.at(property);
+}
+
+Jpp::Json &Jpp::Json::operator=(std::string str)
+{
+    this->type = JSON_STRING;
+    this->value = str;
+}
+
+Jpp::Json &Jpp::Json::operator=(bool val)
+{
+    this->type = JSON_BOOLEAN;
+    this->value = val;
+}
+
+Jpp::Json &Jpp::Json::operator=(double num)
+{
+    this->type = JSON_NUMBER;
+    this->value = num;
 }
 
 void Jpp::Json::parse(std::string json_string)
@@ -184,7 +229,10 @@ std::map<std::string, Jpp::Json> Jpp::parse_object(std::string str, size_t &inde
         case Jpp::Token::OBJECT_END:
             throw std::runtime_error("Unexpected the end of the object, a value is expected");
         case Jpp::Token::ALPHA:
-            current_value = Jpp::Json(Jpp::parse_object(str, index), JSON_BOOLEAN);
+            if (str[index] == 'n')
+                current_value = Jpp::Json(Jpp::parse_null(str, index), JSON_NULL);
+            else
+                current_value = Jpp::Json(Jpp::parse_boolean(str, index), JSON_BOOLEAN);
             break;
         case Jpp::Token::NUMBER:
             current_value = Jpp::Json(Jpp::parse_number(str, index), JSON_NUMBER);
@@ -201,16 +249,15 @@ std::map<std::string, Jpp::Json> Jpp::parse_object(std::string str, size_t &inde
         next = Jpp::match_next(str, index);
         if (next != Jpp::Token::SEPARATOR && next != Jpp::Token::OBJECT_END)
             throw std::runtime_error("Expected a ',' or the end of the object");
-        
+
         ++index;
 
         Jpp::skip_white_spaces(str, index);
-        
+
         object.insert(std::pair<std::string, Jpp::Json>(current_property, current_value));
 
         if (next == Jpp::Token::OBJECT_END)
             return object;
-
     }
 }
 
@@ -243,7 +290,10 @@ std::map<std::string, Jpp::Json> Jpp::parse_array(std::string str, size_t &index
         case Jpp::Token::OBJECT_END:
             throw std::runtime_error("Unexpected '}' token, a value is expected");
         case Jpp::Token::ALPHA:
-            current_value = Jpp::Json(Jpp::parse_object(str, index), JSON_BOOLEAN);
+             if (str[index] == 'n')
+                current_value = Jpp::Json(Jpp::parse_null(str, index), JSON_NULL);
+            else
+                current_value = Jpp::Json(Jpp::parse_boolean(str, index), JSON_BOOLEAN);
             break;
         case Jpp::Token::NUMBER:
             current_value = Jpp::Json(Jpp::parse_number(str, index), JSON_NUMBER);
@@ -264,7 +314,7 @@ std::map<std::string, Jpp::Json> Jpp::parse_array(std::string str, size_t &index
         ++index;
 
         Jpp::skip_white_spaces(str, index);
-        
+
         object.insert(std::pair<std::string, Jpp::Json>(std::to_string(current_index), current_value));
         ++current_index;
 
@@ -388,6 +438,19 @@ std::any Jpp::parse_boolean(std::string str, size_t &index)
     throw std::runtime_error("Unrecognized token: " + substr);
 }
 
+std::any Jpp::parse_null(std::string str, size_t &index)
+{
+    size_t start = index;
+    Jpp::next_white_space_or_separator(str, index);
+    size_t end = index;
+    std::string substr = str.substr(start, end - start);
+
+    if (substr == "null")
+        return nullptr;
+        
+    throw std::runtime_error("Unrecognized token: " + substr);
+}
+
 std::string Jpp::Json::to_string()
 {
     switch (this->type)
@@ -397,7 +460,10 @@ std::string Jpp::Json::to_string()
     case JSON_ARRAY:
         return Jpp::json_array_to_string(*this);
     case JSON_STRING:
-        return "\"" + Jpp::str_replace(std::any_cast<std::string>(this->value), '"', "\\\"") + "\"";
+        return "\"" +
+               Jpp::str_replace(
+                   Jpp::str_replace(std::any_cast<std::string>(this->value), '"', "\\\""), '\n', "\\n") +
+               "\"";
     case JSON_BOOLEAN:
         return std::any_cast<bool>(this->value) ? "true" : "false";
     case JSON_NUMBER:
@@ -453,8 +519,10 @@ std::string Jpp::str_replace(std::string original, char old, std::string new_str
     std::string str = "";
     for (char ch : original)
     {
-        if (ch == old) str += new_str;
-        else str += ch;
+        if (ch == old)
+            str += new_str;
+        else
+            str += ch;
     }
     return str;
 }

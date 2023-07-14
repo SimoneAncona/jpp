@@ -15,12 +15,14 @@
 #include <any>
 #include <format>
 #include <cctype>
+#include <vector>
 
 #define JSON_ARRAY (char)0x00
 #define JSON_OBJECT (char)0x01
-#define JSON_STRING (char)0xF2
-#define JSON_BOOLEAN (char)0xF3
-#define JSON_NUMBER (char)0xF4
+#define JSON_STRING (char)0xF0
+#define JSON_BOOLEAN (char)0xF1
+#define JSON_NUMBER (char)0xF2
+#define JSON_NULL (char)0xF3
 
 namespace Jpp
 {
@@ -54,6 +56,10 @@ namespace Jpp
         Json();
         Json(std::map<std::string, Json>, json_type_t);
         Json(std::any, json_type_t);
+        Json(std::string);
+        Json(double);
+        Json(bool);
+        Json(nullptr_t);
         ~Json();
 
         /**
@@ -151,6 +157,30 @@ namespace Jpp
         Json &operator[](std::string);
 
         /**
+         * @return Json& 
+         * @since v1.0
+         */
+        Json &operator=(std::string);
+
+        /**
+         * @return Json& 
+         * @since v1.0
+         */
+        Json &operator=(double);
+
+        /**
+         * @return Json& 
+         * @since v1.0
+         */
+        Json &operator=(bool);
+
+        /**
+         * @return Json& 
+         * @since v1.0
+         */
+        Json &operator=(std::vector<Json>);
+
+        /**
          * @brief Convert the JSON object to its JSON representation.
          * 
          * @return std::string 
@@ -164,6 +194,7 @@ namespace Jpp
     std::string parse_string(std::string, size_t &, char);
     std::any parse_number(std::string, size_t &);
     std::any parse_boolean(std::string, size_t &);
+    std::any parse_null(std::string, size_t &);
 
     Token match_next(std::string, size_t &);
     void next_white_space_or_separator(std::string, size_t &);
