@@ -491,8 +491,10 @@ std::string Jpp::Json::to_string()
 std::string Jpp::json_object_to_string(Jpp::Json json)
 {
     std::map<std::string, Jpp::Json> children = json.get_children();
+    if (children.size() == 0) return "{}";
     std::map<std::string, Jpp::Json>::iterator it;
     std::string str = "{";
+
 
     for (it = children.begin(); it != std::prev(children.end()); ++it)
     {
@@ -510,6 +512,7 @@ std::string Jpp::json_object_to_string(Jpp::Json json)
 std::string Jpp::json_array_to_string(Jpp::Json json)
 {
     std::map<std::string, Jpp::Json> children = json.get_children();
+    if (children.size() == 0) return "[]";
     std::map<std::string, Jpp::Json>::iterator it;
     std::string str = "[";
 
