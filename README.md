@@ -54,3 +54,24 @@ int main(int argc, char **argv)
     return 0;
 }
 ```
+
+## Step 3
+
+In this step we will see how to create a JSON object from zero
+
+```c++
+#include "json.hh"
+#include <iostream>
+
+int main(int argc, char **argv)
+{
+    Jpp::Json car;
+    Jpp::Json car_collection;
+    car["brand"] = "Brand1";
+    car["age"] = 10;
+    car["model"] = "Model1";
+
+    car_collection["favoriteCar"] = car;
+    return 0;
+}
+```

@@ -172,6 +172,12 @@ namespace Jpp
          * @return Json& 
          * @since v1.0
          */
+        Json &operator=(int);
+
+        /**
+         * @return Json& 
+         * @since v1.0
+         */
         Json &operator=(bool);
 
         /**

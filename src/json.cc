@@ -144,6 +144,14 @@ Jpp::Json &Jpp::Json::operator=(double num)
     return *this;
 }
 
+Jpp::Json &Jpp::Json::operator=(int num)
+{
+    this->type = JSON_NUMBER;
+    this->value = static_cast<double>(num);
+    
+    return *this;
+}
+
 void Jpp::Json::parse(std::string json_string)
 {
     trim_string(json_string);
