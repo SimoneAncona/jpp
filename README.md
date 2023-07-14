@@ -1,2 +1,2 @@
-# jpp
-JSON parser for C++
+# JPP
+A JSON parser for C++
