@@ -107,7 +107,7 @@ Jpp::Json &Jpp::Json::operator[](std::string property)
 {
     if (this->type > JSON_OBJECT)
         throw std::out_of_range("Cannot use the subscript operator with an atomic value, use get_value");
-    if (this->children.find(property) == this->children.end())
+    if (this->type == JSON_OBJECT && this->children.find(property) == this->children.end())
         this->children[property] = Json(nullptr);
     return this->children.at(property);
 }
@@ -116,18 +116,32 @@ Jpp::Json &Jpp::Json::operator=(std::string str)
 {
     this->type = JSON_STRING;
     this->value = str;
+
+    return *this;
+}
+
+Jpp::Json &Jpp::Json::operator=(const char str[])
+{
+    this->type = JSON_STRING;
+    this->value = std::string(str);
+
+    return *this;
 }
 
 Jpp::Json &Jpp::Json::operator=(bool val)
 {
     this->type = JSON_BOOLEAN;
     this->value = val;
+    
+    return *this;
 }
 
 Jpp::Json &Jpp::Json::operator=(double num)
 {
     this->type = JSON_NUMBER;
     this->value = num;
+    
+    return *this;
 }
 
 void Jpp::Json::parse(std::string json_string)
@@ -447,7 +461,7 @@ std::any Jpp::parse_null(std::string str, size_t &index)
 
     if (substr == "null")
         return nullptr;
-        
+
     throw std::runtime_error("Unrecognized token: " + substr);
 }
 
@@ -468,6 +482,8 @@ std::string Jpp::Json::to_string()
         return std::any_cast<bool>(this->value) ? "true" : "false";
     case JSON_NUMBER:
         return std::to_string(std::any_cast<double>(this->value));
+    case JSON_NULL:
+        return "null";
     }
     return "";
 }

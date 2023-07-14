@@ -178,7 +178,8 @@ namespace Jpp
          * @return Json& 
          * @since v1.0
          */
-        Json &operator=(std::vector<Json>);
+        Json &operator=(const char[]);
+
 
         /**
          * @brief Convert the JSON object to its JSON representation.
