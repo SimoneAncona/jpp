@@ -2,8 +2,8 @@
  * @file json.cc
  * @author Simone Ancona
  * @brief
- * @version 1.0
- * @date 2023-07-14
+ * @version 1.1
+ * @date 2023-07-15
  *
  * @copyright Copyright (c) 2023
  *
@@ -150,6 +150,26 @@ Jpp::Json &Jpp::Json::operator=(int num)
     this->value = static_cast<double>(num);
     
     return *this;
+}
+
+std::map<std::string, Jpp::Json>::iterator Jpp::Json::begin()
+{
+    return children.begin();
+}
+
+std::map<std::string, Jpp::Json>::iterator Jpp::Json::end()
+{
+    return children.end();
+}
+
+std::map<std::string, Jpp::Json>::reverse_iterator Jpp::Json::rbegin()
+{
+    return children.rbegin();
+}
+
+std::map<std::string, Jpp::Json>::reverse_iterator Jpp::Json::rend()
+{
+    return children.rend();
 }
 
 void Jpp::Json::parse(std::string json_string)

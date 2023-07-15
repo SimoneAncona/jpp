@@ -2,8 +2,8 @@
  * @file json.hh
  * @author Simone Ancona
  * @brief A JSON parser for C++
- * @version 1.0
- * @date 2023-07-14
+ * @version 1.1
+ * @date 2023-07-15
  * 
  * @copyright Copyright (c) 2023
  * 
@@ -193,6 +193,38 @@ namespace Jpp
          * @return std::string 
          */
         std::string to_string();
+
+        /**
+         * @brief Begin iterator
+         * 
+         * @return std::map<std::string, Json>::iterator
+         * @since v1.1
+         */
+        std::map<std::string, Json>::iterator begin();
+
+        /**
+         * @brief End iterator
+         * 
+         * @return std::map<std::string, Json>::iterator
+         * @since v1.1
+         */
+        std::map<std::string, Json>::iterator end();
+
+        /**
+         * @brief Reverse begin iterator
+         * 
+         * @return std::map<std::string, Json>::iterator
+         * @since v1.1
+         */
+        std::map<std::string, Json>::reverse_iterator rbegin();
+
+        /**
+         * @brief Reverse end iterator
+         * 
+         * @return std::map<std::string, Json>::iterator
+         * @since v1.1
+         */
+        std::map<std::string, Json>::reverse_iterator rend();
     };
 
     void trim_string(std::string &);
