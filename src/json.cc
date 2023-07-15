@@ -188,7 +188,7 @@ void Jpp::Json::parse(std::string json_string)
         this->type = JSON_ARRAY;
         return;
     }
-    throw std::runtime_error(std::format("Unexpected {} at the beginning of the string", json_string[0]));
+    throw std::runtime_error("Unexpected " + std::string(1, json_string[0]) + " at the beginning of the string");
 }
 
 void Jpp::trim_string(std::string &str)
@@ -389,7 +389,7 @@ Jpp::Token Jpp::match_next(std::string str, size_t &index)
         return Jpp::Token::NUMBER;
     if (isalpha(str[index]))
         return Jpp::Token::ALPHA;
-    throw std::runtime_error(std::format("Unexpected {} token", str[index]));
+    throw std::runtime_error("Unexpected " + std::string(1, str[index]) + " token");
 }
 
 void Jpp::skip_white_spaces(std::string str, size_t &index)
