@@ -2,12 +2,14 @@
  * @file json.hh
  * @author Simone Ancona
  * @brief A JSON parser for C++
- * @version 1.1.2
+ * @version 1.1.3
  * @date 2023-07-15
  * 
  * @copyright Copyright (c) 2023
  * 
  */
+
+#pragma once
 
 #include <string>
 #include <map>

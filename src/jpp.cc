@@ -2,7 +2,7 @@
  * @file json.cc
  * @author Simone Ancona
  * @brief
- * @version 1.1.2
+ * @version 1.1.3
  * @date 2023-07-15
  *
  * @copyright Copyright (c) 2023
