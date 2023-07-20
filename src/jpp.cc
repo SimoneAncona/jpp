@@ -2,8 +2,8 @@
  * @file json.cc
  * @author Simone Ancona
  * @brief
- * @version 1.1.3
- * @date 2023-07-15
+ * @version 1.1.4
+ * @date 2023-07-20
  *
  * @copyright Copyright (c) 2023
  *
@@ -11,32 +11,32 @@
 
 #include "jpp.hh"
 
-bool Jpp::Json::is_array()
+inline bool Jpp::Json::is_array()
 {
     return this->type == JSON_ARRAY;
 }
 
-bool Jpp::Json::is_object()
+inline bool Jpp::Json::is_object()
 {
     return this->type == JSON_OBJECT;
 }
 
-bool Jpp::Json::is_string()
+inline bool Jpp::Json::is_string()
 {
     return this->type == JSON_STRING;
 }
 
-bool Jpp::Json::is_boolean()
+inline bool Jpp::Json::is_boolean()
 {
     return this->type == JSON_BOOLEAN;
 }
 
-bool Jpp::Json::is_number()
+inline bool Jpp::Json::is_number()
 {
     return this->type == JSON_NUMBER;
 }
 
-Jpp::json_type_t Jpp::Json::get_type()
+inline Jpp::json_type_t Jpp::Json::get_type()
 {
     return this->type;
 }
@@ -86,24 +86,24 @@ Jpp::Json::Json(nullptr_t null)
     this->type = JSON_NULL;
 }
 
-std::any Jpp::Json::get_value()
+inline std::any Jpp::Json::get_value()
 {
     return this->value;
 }
 
-std::map<std::string, Jpp::Json> Jpp::Json::get_children()
+inline std::map<std::string, Jpp::Json> Jpp::Json::get_children()
 {
     return this->children;
 }
 
-Jpp::Json &Jpp::Json::operator[](size_t index)
+inline Jpp::Json &Jpp::Json::operator[](size_t index)
 {
     if (this->type > JSON_OBJECT)
         throw std::out_of_range("Cannot use the subscript operator with an atomic value, use get_value");
     return this->children.at(std::to_string(index));
 }
 
-Jpp::Json &Jpp::Json::operator[](std::string property)
+inline Jpp::Json &Jpp::Json::operator[](std::string property)
 {
     if (this->type > JSON_OBJECT)
         throw std::out_of_range("Cannot use the subscript operator with an atomic value, use get_value");
@@ -112,7 +112,7 @@ Jpp::Json &Jpp::Json::operator[](std::string property)
     return this->children.at(property);
 }
 
-Jpp::Json &Jpp::Json::operator=(std::string str)
+inline Jpp::Json &Jpp::Json::operator=(std::string str)
 {
     this->type = JSON_STRING;
     this->value = str;
@@ -120,7 +120,7 @@ Jpp::Json &Jpp::Json::operator=(std::string str)
     return *this;
 }
 
-Jpp::Json &Jpp::Json::operator=(const char str[])
+inline Jpp::Json &Jpp::Json::operator=(const char str[])
 {
     this->type = JSON_STRING;
     this->value = std::string(str);
@@ -128,7 +128,7 @@ Jpp::Json &Jpp::Json::operator=(const char str[])
     return *this;
 }
 
-Jpp::Json &Jpp::Json::operator=(bool val)
+inline Jpp::Json &Jpp::Json::operator=(bool val)
 {
     this->type = JSON_BOOLEAN;
     this->value = val;
@@ -136,7 +136,7 @@ Jpp::Json &Jpp::Json::operator=(bool val)
     return *this;
 }
 
-Jpp::Json &Jpp::Json::operator=(double num)
+inline Jpp::Json &Jpp::Json::operator=(double num)
 {
     this->type = JSON_NUMBER;
     this->value = num;
@@ -144,7 +144,7 @@ Jpp::Json &Jpp::Json::operator=(double num)
     return *this;
 }
 
-Jpp::Json &Jpp::Json::operator=(int num)
+inline Jpp::Json &Jpp::Json::operator=(int num)
 {
     this->type = JSON_NUMBER;
     this->value = static_cast<double>(num);
@@ -152,22 +152,22 @@ Jpp::Json &Jpp::Json::operator=(int num)
     return *this;
 }
 
-std::map<std::string, Jpp::Json>::iterator Jpp::Json::begin()
+inline std::map<std::string, Jpp::Json>::iterator Jpp::Json::begin()
 {
     return children.begin();
 }
 
-std::map<std::string, Jpp::Json>::iterator Jpp::Json::end()
+inline std::map<std::string, Jpp::Json>::iterator Jpp::Json::end()
 {
     return children.end();
 }
 
-std::map<std::string, Jpp::Json>::reverse_iterator Jpp::Json::rbegin()
+inline std::map<std::string, Jpp::Json>::reverse_iterator Jpp::Json::rbegin()
 {
     return children.rbegin();
 }
 
-std::map<std::string, Jpp::Json>::reverse_iterator Jpp::Json::rend()
+inline std::map<std::string, Jpp::Json>::reverse_iterator Jpp::Json::rend()
 {
     return children.rend();
 }
@@ -555,13 +555,13 @@ std::string Jpp::json_array_to_string(Jpp::Json json)
     return str + "]";
 }
 
-void Jpp::next_white_space_or_separator(std::string str, size_t &index)
+inline void Jpp::next_white_space_or_separator(std::string str, size_t &index)
 {
     while (index < str.length() && !isspace(str[index]) && str[index] != '[' && str[index] != '{' && str[index] != ',' && str[index] != ']' && str[index] != '}')
         ++index;
 }
 
-std::string Jpp::str_replace(std::string original, char old, std::string new_str)
+inline std::string Jpp::str_replace(std::string original, char old, std::string new_str)
 {
     std::string str = "";
     for (char ch : original)
