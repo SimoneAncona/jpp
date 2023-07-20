@@ -46,10 +46,6 @@ Jpp::Json::Json()
     this->type = JSON_OBJECT;
 }
 
-Jpp::Json::~Json()
-{
-}
-
 Jpp::Json::Json(std::map<std::string, Jpp::Json> children, Jpp::json_type_t type)
 {
     this->children = children;

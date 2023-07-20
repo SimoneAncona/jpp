@@ -61,7 +61,7 @@ namespace Jpp
         Json(double);
         Json(bool);
         Json(nullptr_t);
-        ~Json();
+        ~Json() = default;
 
         /**
          * @brief Get the type object
