@@ -22,6 +22,12 @@ int main(int argc, char **argv)
 
         std::cout << json1.to_string() << "\n"
                   << std::endl;
+
+        auto children = json.get_children();
+        for (auto child : children)
+        {
+            std::cout << child.second.to_string() << std::endl;
+        }
         json1["name"] = "simon";
         json1["surname"] = Jpp::Json(nullptr);
         std::cout << json1.to_string() << "\n"
