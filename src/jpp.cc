@@ -2,7 +2,7 @@
  * @file json.cc
  * @author Simone Ancona
  * @brief
- * @version 1.1.4
+ * @version 1.2
  * @date 2023-07-20
  *
  * @copyright Copyright (c) 2023
@@ -11,32 +11,32 @@
 
 #include "jpp.hh"
 
-inline bool Jpp::Json::is_array()
+bool Jpp::Json::is_array()
 {
     return this->type == JSON_ARRAY;
 }
 
-inline bool Jpp::Json::is_object()
+bool Jpp::Json::is_object()
 {
     return this->type == JSON_OBJECT;
 }
 
-inline bool Jpp::Json::is_string()
+bool Jpp::Json::is_string()
 {
     return this->type == JSON_STRING;
 }
 
-inline bool Jpp::Json::is_boolean()
+bool Jpp::Json::is_boolean()
 {
     return this->type == JSON_BOOLEAN;
 }
 
-inline bool Jpp::Json::is_number()
+bool Jpp::Json::is_number()
 {
     return this->type == JSON_NUMBER;
 }
 
-inline Jpp::json_type_t Jpp::Json::get_type()
+Jpp::json_type_t Jpp::Json::get_type()
 {
     return this->type;
 }
@@ -82,90 +82,20 @@ Jpp::Json::Json(nullptr_t null)
     this->type = JSON_NULL;
 }
 
-inline std::any Jpp::Json::get_value()
-{
-    return this->value;
-}
-
-inline std::map<std::string, Jpp::Json> Jpp::Json::get_children()
-{
-    return this->children;
-}
-
-inline Jpp::Json &Jpp::Json::operator[](size_t index)
+Jpp::Json &Jpp::Json::operator[](size_t index)
 {
     if (this->type > JSON_OBJECT)
         throw std::out_of_range("Cannot use the subscript operator with an atomic value, use get_value");
     return this->children.at(std::to_string(index));
 }
 
-inline Jpp::Json &Jpp::Json::operator[](std::string property)
+Jpp::Json &Jpp::Json::operator[](std::string property)
 {
     if (this->type > JSON_OBJECT)
         throw std::out_of_range("Cannot use the subscript operator with an atomic value, use get_value");
     if (this->type == JSON_OBJECT && this->children.find(property) == this->children.end())
         this->children[property] = Json(nullptr);
     return this->children.at(property);
-}
-
-inline Jpp::Json &Jpp::Json::operator=(std::string str)
-{
-    this->type = JSON_STRING;
-    this->value = str;
-
-    return *this;
-}
-
-inline Jpp::Json &Jpp::Json::operator=(const char str[])
-{
-    this->type = JSON_STRING;
-    this->value = std::string(str);
-
-    return *this;
-}
-
-inline Jpp::Json &Jpp::Json::operator=(bool val)
-{
-    this->type = JSON_BOOLEAN;
-    this->value = val;
-    
-    return *this;
-}
-
-inline Jpp::Json &Jpp::Json::operator=(double num)
-{
-    this->type = JSON_NUMBER;
-    this->value = num;
-    
-    return *this;
-}
-
-inline Jpp::Json &Jpp::Json::operator=(int num)
-{
-    this->type = JSON_NUMBER;
-    this->value = static_cast<double>(num);
-    
-    return *this;
-}
-
-inline std::map<std::string, Jpp::Json>::iterator Jpp::Json::begin()
-{
-    return children.begin();
-}
-
-inline std::map<std::string, Jpp::Json>::iterator Jpp::Json::end()
-{
-    return children.end();
-}
-
-inline std::map<std::string, Jpp::Json>::reverse_iterator Jpp::Json::rbegin()
-{
-    return children.rbegin();
-}
-
-inline std::map<std::string, Jpp::Json>::reverse_iterator Jpp::Json::rend()
-{
-    return children.rend();
 }
 
 void Jpp::Json::parse(std::string json_string)
@@ -551,13 +481,13 @@ std::string Jpp::json_array_to_string(Jpp::Json json)
     return str + "]";
 }
 
-inline void Jpp::next_white_space_or_separator(std::string str, size_t &index)
+void Jpp::next_white_space_or_separator(std::string str, size_t &index)
 {
     while (index < str.length() && !isspace(str[index]) && str[index] != '[' && str[index] != '{' && str[index] != ',' && str[index] != ']' && str[index] != '}')
         ++index;
 }
 
-inline std::string Jpp::str_replace(std::string original, char old, std::string new_str)
+std::string Jpp::str_replace(std::string original, char old, std::string new_str)
 {
     std::string str = "";
     for (char ch : original)

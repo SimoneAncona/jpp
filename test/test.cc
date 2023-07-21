@@ -45,6 +45,13 @@ int main(int argc, char **argv)
         {
             std::cout << a.second.to_string() << std::endl;
         }
+
+        std::vector<Jpp::Json> to_vector = array.get_vector();
+        for (auto a : to_vector)
+        {
+            std::cout << a.to_string() << " ";
+        }
+        std::cout << std::endl;
     }
     catch (const std::exception e)
     {
