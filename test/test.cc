@@ -58,6 +58,11 @@ int main(int argc, char **argv)
             std::cout << a.to_string() << " ";
         }
         std::cout << std::endl;
+
+        Jpp::Json e2;
+        e2.parse(read_string_from_file("json/e2.json"));
+
+        std::cout << e2.to_string() << std::endl;
     }
     catch (const std::exception e)
     {
