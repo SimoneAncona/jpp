@@ -11,32 +11,32 @@
 
 #include "jpp.hh"
 
-inline bool Jpp::Json::is_array()
+bool Jpp::Json::is_array()
 {
     return this->type == JSON_ARRAY;
 }
 
-inline bool Jpp::Json::is_object()
+bool Jpp::Json::is_object()
 {
     return this->type == JSON_OBJECT;
 }
 
-inline bool Jpp::Json::is_string()
+bool Jpp::Json::is_string()
 {
     return this->type == JSON_STRING;
 }
 
-inline bool Jpp::Json::is_boolean()
+bool Jpp::Json::is_boolean()
 {
     return this->type == JSON_BOOLEAN;
 }
 
-inline bool Jpp::Json::is_number()
+bool Jpp::Json::is_number()
 {
     return this->type == JSON_NUMBER;
 }
 
-inline Jpp::json_type_t Jpp::Json::get_type()
+Jpp::json_type_t Jpp::Json::get_type()
 {
     return this->type;
 }
@@ -82,12 +82,12 @@ Jpp::Json::Json(nullptr_t null)
     this->type = JSON_NULL;
 }
 
-inline std::any Jpp::Json::get_value()
+std::any Jpp::Json::get_value()
 {
     return this->value;
 }
 
-inline std::map<std::string, Jpp::Json> Jpp::Json::get_children()
+std::map<std::string, Jpp::Json> Jpp::Json::get_children()
 {
     return this->children;
 }
@@ -531,13 +531,13 @@ std::string Jpp::json_array_to_string(Jpp::Json json)
     return str + "]";
 }
 
-inline void Jpp::next_white_space_or_separator(std::string str, size_t &index)
+void Jpp::next_white_space_or_separator(std::string str, size_t &index)
 {
     while (index < str.length() && !isspace(str[index]) && str[index] != '[' && str[index] != '{' && str[index] != ',' && str[index] != ']' && str[index] != '}')
         ++index;
 }
 
-inline std::string Jpp::str_replace(std::string original, char old, std::string new_str)
+std::string Jpp::str_replace(std::string original, char old, std::string new_str)
 {
     std::string str = "";
     for (char ch : original)
