@@ -2,11 +2,11 @@
  * @file json.hh
  * @author Simone Ancona
  * @brief A JSON parser for C++
- * @version 1.2
+ * @version 1.2.1
  * @date 2023-07-20
- *
+ * 
  * @copyright Copyright (c) 2023
- *
+ * 
  */
 
 #pragma once
@@ -44,7 +44,7 @@ namespace Jpp
 
     /**
      * @brief The Json class allows to parse a json string
-     *
+     * 
      */
     class Json
     {
@@ -65,64 +65,61 @@ namespace Jpp
 
         /**
          * @brief Get the type object
-         *
-         * @return json_type_t
+         * 
+         * @return json_type_t 
          * @since v1.0
          */
         json_type_t get_type();
 
         /**
          * @brief Get the value object
-         *
-         * @return std::any
+         * 
+         * @return std::any 
          * @since v1.0
          */
-        inline std::any get_value()
-        {
-            return this->value;
-        }
+        std::any get_value();
 
         /**
          * @brief Check if the JSON value is an array
-         *
-         * @return true
-         * @return false
+         * 
+         * @return true 
+         * @return false 
          * @since v1.0
          */
         bool is_array();
 
         /**
          * @brief Check if the JSON value is an object
-         *
-         * @return true
-         * @return false
+         * 
+         * @return true 
+         * @return false 
          * @since v1.0
          */
         bool is_object();
 
         /**
          * @brief Check if the JSON is an atomic string value
-         *
-         * @return true
-         * @return false
+         * 
+         * @return true 
+         * @return false 
          * @since v1.0
          */
         bool is_string();
 
         /**
          * @brief Check if the JSON is an atomic boolean value
-         *
-         * @return true
-         * @return false
+         * 
+         * @return true 
+         * @return false 
          * @since v1.0
          */
         bool is_boolean();
 
         /**
          * @brief Check if the JSON is an atomic double value
-         *
-         * @return true
-         * @return false
+         * 
+         * @return true 
+         * @return false 
          * @since v1.0
          */
         bool is_number();
@@ -135,104 +132,72 @@ namespace Jpp
 
         /**
          * @brief Get the children object
-         *
-         * @return std::map<std::string, Json>
+         * 
+         * @return std::map<std::string, Json> 
          * @since v1.0
          */
-        inline std::map<std::string, Json> get_children()
-        {
-            return this->children;
-        }
+        std::map<std::string, Json> get_children();
 
         /**
          * @brief Access to a position of the array
-         * @example
+         * @example 
          *  Jpp::Json json;
          *  json.parse("[0, 1, 2, 3]");
          *  json[0] // returns an any value
-         * @return Json&
+         * @return Json& 
          * @since v1.0
          */
         Json &operator[](size_t);
 
         /**
          * @brief Access to a value of the object with the given property name
-         *
-         * @return Json&
+         * 
+         * @return Json& 
          * @since v1.0
          */
         Json &operator[](std::string);
 
         /**
-         * @return Json&
+         * @return Json& 
          * @since v1.0
          */
-        inline Json &operator=(const char str[])
-        {
-            this->type = JSON_STRING;
-            this->value = std::string(str);
-
-            return *this;
-        }
+        Json &operator=(std::string);
 
         /**
-         * @return Json&
+         * @return Json& 
          * @since v1.0
          */
-        inline Json &operator=(double num)
-        {
-            this->type = JSON_NUMBER;
-            this->value = num;
-
-            return *this;
-        }
+        Json &operator=(double);
 
         /**
-         * @return Json&
+         * @return Json& 
          * @since v1.0
          */
-        inline Json &operator=(int num)
-        {
-            this->type = JSON_NUMBER;
-            this->value = static_cast<double>(num);
-
-            return *this;
-        }
+        Json &operator=(int);
 
         /**
-         * @return Json&
+         * @return Json& 
          * @since v1.0
          */
-        inline Json &operator=(bool val)
-        {
-            this->type = JSON_BOOLEAN;
-            this->value = val;
-
-            return *this;
-        }
+        Json &operator=(bool);
 
         /**
-         * @return Json&
+         * @return Json& 
          * @since v1.0
          */
-        inline Json &operator=(std::string str)
-        {
-            this->type = JSON_STRING;
-            this->value = str;
+        Json &operator=(const char[]);
 
-            return *this;
-        }
 
         /**
          * @brief Convert the JSON object to its JSON representation.
-         *
-         * @return std::string
+         * 
+         * @return std::string 
          */
         std::string to_string();
 
         /**
          * @brief Begin iterator
-         *
+         * 
          * @return std::map<std::string, Json>::iterator
          * @since v1.1
          */
@@ -243,7 +208,7 @@ namespace Jpp
 
         /**
          * @brief End iterator
-         *
+         * 
          * @return std::map<std::string, Json>::iterator
          * @since v1.1
          */
@@ -254,7 +219,7 @@ namespace Jpp
 
         /**
          * @brief Reverse begin iterator
-         *
+         * 
          * @return std::map<std::string, Json>::iterator
          * @since v1.1
          */
@@ -265,7 +230,7 @@ namespace Jpp
 
         /**
          * @brief Reverse end iterator
-         *
+         * 
          * @return std::map<std::string, Json>::iterator
          * @since v1.1
          */
@@ -276,21 +241,11 @@ namespace Jpp
 
         /**
          * @brief Get the vector if the JSON object is an array
-         *
-         * @return std::vector<Json>
+         * 
+         * @return std::vector<Json> 
          * @since v1.2
          */
-        inline std::vector<Json> get_vector()
-        {
-            if (type != JSON_ARRAY)
-                throw std::runtime_error("Cannot convert a non-array JSON to a vector");
-            std::vector<Jpp::Json> vct;
-            for (auto json : children)
-            {
-                vct.push_back(json.second);
-            }
-            return vct;
-        }
+        std::vector<Json> get_vector();
     };
 
     void trim_string(std::string &);
