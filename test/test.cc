@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <ctime>
 
 std::string read_string_from_file(const std::string &);
 
@@ -63,6 +64,16 @@ int main(int argc, char **argv)
         e2.parse(read_string_from_file("json/e2.json"));
 
         std::cout << e2.to_string() << std::endl;
+
+        auto t1 = time(0);
+
+        for (int i = 0; i < 1'000; i++)
+        {
+            e2.parse(read_string_from_file("json/e2.json"));
+        }
+
+        auto t2 = time(0);
+        std::cout << t2 - t1 << "s" << std::endl;
     }
     catch (const std::exception e)
     {
