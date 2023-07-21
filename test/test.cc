@@ -61,7 +61,8 @@ int main(int argc, char **argv)
         std::cout << std::endl;
 
         Jpp::Json e2;
-        e2.parse(read_string_from_file("json/e2.json"));
+        std::string e2json = read_string_from_file("json/e2.json");
+        e2.parse(e2json);
 
         std::cout << e2.to_string() << std::endl;
 
@@ -69,7 +70,7 @@ int main(int argc, char **argv)
 
         for (int i = 0; i < 1'000; i++)
         {
-            e2.parse(read_string_from_file("json/e2.json"));
+            e2.parse(e2json);
         }
 
         auto t2 = time(0);
