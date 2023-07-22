@@ -70,11 +70,13 @@ int main(int argc, char **argv)
 
         auto t2 = time(0);
         std::cout << t2 - t1 << "s" << std::endl;
+        std::cout << e2.to_string() << std::endl;
     }
     catch (const std::exception e)
     {
         std::cout << e.what() << std::endl;
     }
+
 }
 
 std::string read_string_from_file(const std::string &file_path)
