@@ -10,7 +10,6 @@
  */
 
 #include "jpp.hh"
-#include <iostream>
 
 Jpp::Json &Jpp::Json::operator[](size_t index)
 {
