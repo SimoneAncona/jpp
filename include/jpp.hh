@@ -2,7 +2,7 @@
  * @file json.hh
  * @author Simone Ancona
  * @brief A JSON parser for C++
- * @version 1.3
+ * @version 1.3.1
  * @date 2023-07-22
  *
  * @copyright Copyright (c) 2023
@@ -54,62 +54,82 @@ namespace Jpp
         std::map<std::string, Json> children;
         std::any value;
 
-        void trim_string(std::string &);
         std::map<std::string, Json> parse_object(std::string, size_t &);
         std::map<std::string, Json> parse_array(std::string, size_t &);
         std::string parse_string(std::string, size_t &, char);
         std::any parse_number(std::string, size_t &);
         std::any parse_boolean(std::string, size_t &);
         std::any parse_null(std::string, size_t &);
+        bool is_resolved;
+        std::string unresolved_string;
 
         Token match_next(std::string, size_t &);
-        void next_white_space_or_separator(std::string, size_t &);
-        void skip_white_spaces(std::string, size_t &);
+
+        inline void next_white_space_or_separator(std::string str, size_t &index)
+        {
+            while (index < str.length() && !isspace(str[index]) && str[index] != '[' && str[index] != '{' && str[index] != ',' && str[index] != ']' && str[index] != '}')
+                ++index;
+        }
+
+        inline void skip_white_spaces(std::string str, size_t &index)
+        {
+            while (index < str.length() && isspace(str[index]))
+                ++index;
+        }
 
         std::string json_object_to_string(Json);
         std::string json_array_to_string(Json);
         std::string str_replace(std::string, char, std::string);
 
+        Json get_unresolved_object(std::string, size_t&, bool);
+
     public:
         inline Json() noexcept
         {
             this->type = JSON_OBJECT;
+            this->is_resolved = true;
         }
 
         inline Json(std::map<std::string, Json> children, JsonType type) noexcept
         {
             this->children = children;
             this->type = type;
+            this->is_resolved = true;
         }
 
         inline Json(std::any value, JsonType type) noexcept
         {
             this->value = value;
             this->type = type;
+            this->is_resolved = true;
         }
 
         inline Json(std::string str) noexcept
         {
             this->value = str;
             this->type = JSON_STRING;
+            this->is_resolved = true;
         }
 
         inline Json(double num) noexcept
         {
             this->value = num;
             this->type = JSON_NUMBER;
+            this->is_resolved = true;
         }
 
         Json(bool val)
         {
             this->value = val;
             this->type = JSON_BOOLEAN;
+            this->is_resolved = true;
         }
 
         Json(nullptr_t null)
         {
             this->value = null;
             this->type = JSON_NULL;
+            this->is_resolved = true;
         }
 
         ~Json() = default;
@@ -210,6 +230,8 @@ namespace Jpp
          */
         inline std::map<std::string, Json> get_children()
         {
+            if (!is_resolved)
+                parse(unresolved_string);
             return this->children;
         }
 
