@@ -54,24 +54,24 @@ namespace Jpp
         std::map<std::string, Json> children;
         std::any value;
 
-        std::map<std::string, Json> parse_object(std::string, size_t &);
-        std::map<std::string, Json> parse_array(std::string, size_t &);
-        std::string parse_string(std::string, size_t &, char);
-        std::any parse_number(std::string, size_t &);
-        std::any parse_boolean(std::string, size_t &);
-        std::any parse_null(std::string, size_t &);
+        std::map<std::string, Json> parse_object(std::string_view, size_t &);
+        std::map<std::string, Json> parse_array(std::string_view, size_t &);
+        std::string parse_string(std::string_view, size_t &, char);
+        std::any parse_number(std::string_view, size_t &);
+        std::any parse_boolean(std::string_view, size_t &);
+        std::any parse_null(std::string_view, size_t &);
         bool is_resolved;
         std::string unresolved_string;
 
-        Token match_next(std::string, size_t &);
+        Token match_next(std::string_view, size_t &);
 
-        inline void next_white_space_or_separator(std::string str, size_t &index)
+        inline void next_white_space_or_separator(std::string_view str, size_t &index)
         {
             while (index < str.length() && !isspace(str[index]) && str[index] != '[' && str[index] != '{' && str[index] != ',' && str[index] != ']' && str[index] != '}')
                 ++index;
         }
 
-        inline void skip_white_spaces(std::string str, size_t &index)
+        inline void skip_white_spaces(std::string_view str, size_t &index)
         {
             while (index < str.length() && isspace(str[index]))
                 ++index;
@@ -79,9 +79,9 @@ namespace Jpp
 
         std::string json_object_to_string(Json);
         std::string json_array_to_string(Json);
-        std::string str_replace(std::string, char, std::string);
+        std::string str_replace(std::string_view, char, std::string_view);
 
-        Json get_unresolved_object(std::string, size_t&, bool);
+        Json get_unresolved_object(std::string_view, size_t&, bool);
 
     public:
         inline Json() noexcept
@@ -252,13 +252,13 @@ namespace Jpp
          * @return Json&
          * @since v1.0
          */
-        Json &operator[](std::string);
+        Json &operator[](const std::string&);
 
         /**
          * @return Json&
          * @since v1.0
          */
-        Json &operator=(std::string);
+        Json &operator=(const std::string&);
 
         /**
          * @return Json&
