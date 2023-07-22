@@ -61,7 +61,7 @@ int main(int argc, char **argv)
         std::cout << std::endl;
 
         Jpp::Json e2;
-        std::string e2json = read_string_from_file("json/large.json");
+        std::string e2json = read_string_from_file("json/e2.json");
         std::cout << "started" << std::endl;
 
         auto t1 = time(0);
