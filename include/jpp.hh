@@ -3,7 +3,7 @@
  * @author Simone Ancona
  * @brief A JSON parser for C++
  * @version 1.3.2
- * @date 2023-07-22
+ * @date 2023-07-23
  *
  * @copyright Copyright (c) 2023
  *
