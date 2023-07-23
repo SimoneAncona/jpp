@@ -1,5 +1,5 @@
 /**
- * @file json.hh
+ * @file jpp.hh
  * @author Simone Ancona
  * @brief A JSON parser for C++
  * @version 1.4

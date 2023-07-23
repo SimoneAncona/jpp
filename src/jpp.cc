@@ -1,5 +1,5 @@
 /**
- * @file json.cc
+ * @file jpp.cc
  * @author Simone Ancona
  * @brief
  * @version 1.4
