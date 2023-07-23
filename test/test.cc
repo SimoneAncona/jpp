@@ -61,22 +61,46 @@ int main(int argc, char **argv)
         std::cout << std::endl;
 
         Jpp::Json e2;
-        std::string e2json = read_string_from_file("json/e2.json");
-        std::cout << "started" << std::endl;
+        std::string large_json = read_string_from_file("json/large.json");
+        std::string e2_json = read_string_from_file("json/e2.json");
+        time_t t1, t2;
 
-        auto t1 = time(0);
-
-        e2.parse(e2json);
-
-        auto t2 = time(0);
+        std::cout << "started parse loop test" << std::endl;
+        t1 = time(0);
+        for (int i = 0; i < 1'000; i++)
+        {
+            e2.parse(e2_json);
+        }
+        t2 = time(0);
         std::cout << t2 - t1 << "s" << std::endl;
-        std::cout << e2.to_string() << std::endl;
+
+        std::cout << "started large json test" << std::endl;
+        t1 = time(0);
+        e2.parse(large_json);
+        t2 = time(0);
+        std::cout << t2 - t1 << "s" << std::endl;
+
+        std::cout << "started large json serialization test" << std::endl;
+        t1 = time(0);
+        e2.to_string();
+        t2 = time(0);
+        std::cout << t2 - t1 << "s" << std::endl;
+
+        std::cout << "started large array access loop test" << std::endl;
+        t1 = time(0);
+        for (int i = 0; i < 1'000; i++)
+        {
+            auto x = e2[i];
+        }
+        t2 = time(0);
+        std::cout << t2 - t1 << "s" << std::endl;
     }
     catch (const std::exception e)
     {
         std::cout << e.what() << std::endl;
     }
-
+    system("PAUSE");
+    return 0;
 }
 
 std::string read_string_from_file(const std::string &file_path)

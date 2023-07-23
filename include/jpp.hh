@@ -2,7 +2,7 @@
  * @file json.hh
  * @author Simone Ancona
  * @brief A JSON parser for C++
- * @version 1.3.1
+ * @version 1.3.2
  * @date 2023-07-22
  *
  * @copyright Copyright (c) 2023
@@ -65,23 +65,69 @@ namespace Jpp
 
         Token match_next(std::string_view, size_t &);
 
-        inline void next_white_space_or_separator(std::string_view str, size_t &index)
+        inline bool is_space(char ch) noexcept
         {
-            while (index < str.length() && !isspace(str[index]) && str[index] != '[' && str[index] != '{' && str[index] != ',' && str[index] != ']' && str[index] != '}')
+            return ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r' || ch == '\v';
+        }
+
+        inline void next_white_space_or_separator(std::string_view str, size_t &index) noexcept
+        {
+            while (index < str.length() && !is_space(str[index]) && str[index] != '[' && str[index] != '{' && str[index] != ',' && str[index] != ']' && str[index] != '}')
                 ++index;
         }
 
-        inline void skip_white_spaces(std::string_view str, size_t &index)
+        inline void skip_white_spaces(std::string_view str, size_t &index) noexcept
         {
-            while (index < str.length() && isspace(str[index]))
+            while (index < str.length() && is_space(str[index]))
                 ++index;
         }
 
-        std::string json_object_to_string(Json);
-        std::string json_array_to_string(Json);
+        inline std::string json_object_to_string(Json json)
+        {
+            std::map<std::string, Jpp::Json> children = json.get_children();
+            if (children.size() == 0)
+                return "{}";
+            if (!is_resolved)
+                return unresolved_string;
+            std::map<std::string, Jpp::Json>::iterator it;
+            std::string str = "{";
+
+            for (it = children.begin(); it != std::prev(children.end()); ++it)
+            {
+                str += "\"" + it->first + "\":";
+                str += it->second.to_string();
+                str += ", ";
+            }
+
+            str += "\"" + std::prev(children.end())->first + "\":";
+            str += std::prev(children.end())->second.to_string();
+
+            return str + "}";
+        }
+
+        inline std::string json_array_to_string(Json json)
+        {
+            std::map<std::string, Jpp::Json> children = json.get_children();
+            if (children.size() == 0)
+                return "[]";
+            if (!is_resolved)
+                return unresolved_string;
+            std::map<std::string, Jpp::Json>::iterator it;
+            std::string str = "[";
+
+            for (it = children.begin(); it != std::prev(children.end()); ++it)
+            {
+                str += it->second.to_string();
+                str += ",";
+            }
+
+            str += std::prev(children.end())->second.to_string();
+
+            return str + "]";
+        }
         std::string str_replace(std::string_view, char, std::string_view);
 
-        Json get_unresolved_object(std::string_view, size_t&, bool);
+        Json get_unresolved_object(std::string_view, size_t &, bool);
 
     public:
         inline Json() noexcept
@@ -118,14 +164,14 @@ namespace Jpp
             this->is_resolved = true;
         }
 
-        Json(bool val)
+        inline Json(bool val) noexcept
         {
             this->value = val;
             this->type = JSON_BOOLEAN;
             this->is_resolved = true;
         }
 
-        Json(nullptr_t null)
+        inline Json(nullptr_t null) noexcept
         {
             this->value = null;
             this->type = JSON_NULL;
@@ -137,10 +183,10 @@ namespace Jpp
         /**
          * @brief Get the type object
          *
-         * @return json_type_t
+         * @return JsonType
          * @since v1.0
          */
-        inline JsonType get_type()
+        inline JsonType get_type() noexcept
         {
             return this->type;
         }
@@ -151,7 +197,7 @@ namespace Jpp
          * @return std::any
          * @since v1.0
          */
-        inline std::any get_value()
+        inline std::any get_value() noexcept
         {
             return this->value;
         }
@@ -163,7 +209,7 @@ namespace Jpp
          * @return false
          * @since v1.0
          */
-        inline bool is_array()
+        inline bool is_array() noexcept
         {
             return this->type == JSON_ARRAY;
         }
@@ -175,7 +221,7 @@ namespace Jpp
          * @return false
          * @since v1.0
          */
-        inline bool is_object()
+        inline bool is_object() noexcept
         {
             return this->type == JSON_OBJECT;
         }
@@ -187,7 +233,7 @@ namespace Jpp
          * @return false
          * @since v1.0
          */
-        inline bool is_string()
+        inline bool is_string() noexcept
         {
             return this->type == JSON_STRING;
         }
@@ -199,7 +245,7 @@ namespace Jpp
          * @return false
          * @since v1.0
          */
-        inline bool is_boolean()
+        inline bool is_boolean() noexcept
         {
             return this->type == JSON_BOOLEAN;
         }
@@ -211,7 +257,7 @@ namespace Jpp
          * @return false
          * @since v1.0
          */
-        inline bool is_number()
+        inline bool is_number() noexcept
         {
             return this->type == JSON_NUMBER;
         }
@@ -220,7 +266,7 @@ namespace Jpp
          * @brief Parse a JSON string
          * @since v1.0
          */
-        void parse(std::string);
+        void parse(const std::string&);
 
         /**
          * @brief Get the children object
@@ -252,13 +298,13 @@ namespace Jpp
          * @return Json&
          * @since v1.0
          */
-        Json &operator[](const std::string&);
+        Json &operator[](const std::string &);
 
         /**
          * @return Json&
          * @since v1.0
          */
-        Json &operator=(const std::string&);
+        Json &operator=(const std::string &);
 
         /**
          * @return Json&
@@ -289,7 +335,28 @@ namespace Jpp
          *
          * @return std::string
          */
-        std::string to_string();
+        inline std::string to_string()
+        {
+            switch (this->type)
+            {
+            case Jpp::JSON_OBJECT:
+                return json_object_to_string(*this);
+            case Jpp::JSON_ARRAY:
+                return json_array_to_string(*this);
+            case Jpp::JSON_STRING:
+                return "\"" +
+                       str_replace(
+                           str_replace(std::any_cast<std::string>(this->value), '"', "\\\""), '\n', "\\n") +
+                       "\"";
+            case Jpp::JSON_BOOLEAN:
+                return std::any_cast<bool>(this->value) ? "true" : "false";
+            case Jpp::JSON_NUMBER:
+                return std::to_string(std::any_cast<double>(this->value));
+            case Jpp::JSON_NULL:
+                return "null";
+            }
+            return "";
+        }
 
         /**
          * @brief Begin iterator
@@ -297,7 +364,7 @@ namespace Jpp
          * @return std::map<std::string, Json>::iterator
          * @since v1.1
          */
-        inline std::map<std::string, Json>::iterator begin()
+        inline std::map<std::string, Json>::iterator begin() noexcept
         {
             return children.begin();
         }
@@ -308,7 +375,7 @@ namespace Jpp
          * @return std::map<std::string, Json>::iterator
          * @since v1.1
          */
-        inline std::map<std::string, Json>::iterator end()
+        inline std::map<std::string, Json>::iterator end() noexcept
         {
             return children.end();
         }
@@ -319,7 +386,7 @@ namespace Jpp
          * @return std::map<std::string, Json>::iterator
          * @since v1.1
          */
-        inline std::map<std::string, Json>::reverse_iterator rbegin()
+        inline std::map<std::string, Json>::reverse_iterator rbegin() noexcept
         {
             return children.rbegin();
         }
@@ -330,7 +397,7 @@ namespace Jpp
          * @return std::map<std::string, Json>::iterator
          * @since v1.1
          */
-        inline std::map<std::string, Json>::reverse_iterator rend()
+        inline std::map<std::string, Json>::reverse_iterator rend() noexcept
         {
             return children.rend();
         }

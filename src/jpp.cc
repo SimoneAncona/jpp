@@ -2,7 +2,7 @@
  * @file json.cc
  * @author Simone Ancona
  * @brief
- * @version 1.3.1
+ * @version 1.3.2
  * @date 2023-07-22
  *
  * @copyright Copyright (c) 2023
@@ -71,7 +71,7 @@ Jpp::Json &Jpp::Json::operator=(int num)
     return *this;
 }
 
-void Jpp::Json::parse(std::string json_string)
+void Jpp::Json::parse(const std::string &json_string)
 {
     size_t start = 0;
     this->is_resolved = true;
@@ -103,7 +103,8 @@ Jpp::Json Jpp::Json::get_unresolved_object(std::string_view str, size_t &index, 
 
     while (cycle)
     {
-        unresolved += str[index];
+        if (!(is_space(str[index]) && !is_string))
+            unresolved += str[index];
         index++;
         if (index >= str.length())
             throw std::runtime_error("Unexpected end of the string");
@@ -455,69 +456,6 @@ std::any Jpp::Json::parse_null(std::string_view str, size_t &index)
         return nullptr;
 
     throw std::runtime_error("Unrecognized token: " + std::string(substr.data()) + " at position: " + std::to_string(index));
-}
-
-std::string Jpp::Json::to_string()
-{
-    switch (this->type)
-    {
-    case Jpp::JSON_OBJECT:
-        return json_object_to_string(*this);
-    case Jpp::JSON_ARRAY:
-        return json_array_to_string(*this);
-    case Jpp::JSON_STRING:
-        return "\"" +
-               str_replace(
-                   str_replace(std::any_cast<std::string>(this->value), '"', "\\\""), '\n', "\\n") +
-               "\"";
-    case Jpp::JSON_BOOLEAN:
-        return std::any_cast<bool>(this->value) ? "true" : "false";
-    case Jpp::JSON_NUMBER:
-        return std::to_string(std::any_cast<double>(this->value));
-    case Jpp::JSON_NULL:
-        return "null";
-    }
-    return "";
-}
-
-std::string Jpp::Json::json_object_to_string(Jpp::Json json)
-{
-    std::map<std::string, Jpp::Json> children = json.get_children();
-    if (children.size() == 0)
-        return "{}";
-    std::map<std::string, Jpp::Json>::iterator it;
-    std::string str = "{";
-
-    for (it = children.begin(); it != std::prev(children.end()); ++it)
-    {
-        str += "\"" + it->first + "\":";
-        str += it->second.to_string();
-        str += ", ";
-    }
-
-    str += "\"" + std::prev(children.end())->first + "\":";
-    str += std::prev(children.end())->second.to_string();
-
-    return str + "}";
-}
-
-std::string Jpp::Json::json_array_to_string(Jpp::Json json)
-{
-    std::map<std::string, Jpp::Json> children = json.get_children();
-    if (children.size() == 0)
-        return "[]";
-    std::map<std::string, Jpp::Json>::iterator it;
-    std::string str = "[";
-
-    for (it = children.begin(); it != std::prev(children.end()); ++it)
-    {
-        str += it->second.to_string();
-        str += ",";
-    }
-
-    str += std::prev(children.end())->second.to_string();
-
-    return str + "]";
 }
 
 std::string Jpp::Json::str_replace(std::string_view original, char old, std::string_view new_str)
