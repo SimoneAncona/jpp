@@ -72,7 +72,7 @@ int main(int argc, char **argv)
     car["model"] = "Model1";
 
     car_collection["favoriteCar"] = car;
-    std::cout << car_collection.to_string() << std::endl;
+    std::cout << car_collection.to_string() << std::endl;    // expected output: {"favoriteCar":{"age":10.000000, "brand":"Brand1", "model":"Model1"}}
     return 0;
 }
 ```
@@ -94,5 +94,6 @@ int main(int argc, char **argv)
     };
 
     Jpp::Json my_array = l_array{0, 1, 2, 10, 123.43, 2322.111};
+    return 0;
 }
 ```
