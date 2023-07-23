@@ -2,7 +2,7 @@
  * @file json.cc
  * @author Simone Ancona
  * @brief
- * @version 1.3.2
+ * @version 1.4
  * @date 2023-07-23
  *
  * @copyright Copyright (c) 2023
@@ -33,6 +33,8 @@ Jpp::Json &Jpp::Json::operator[](const std::string &property)
 
 Jpp::Json &Jpp::Json::operator=(const std::string &str)
 {
+    this->children.clear();
+    this->is_resolved = true;
     this->type = Jpp::JSON_STRING;
     this->value = str;
 
@@ -41,6 +43,8 @@ Jpp::Json &Jpp::Json::operator=(const std::string &str)
 
 Jpp::Json &Jpp::Json::operator=(const char str[])
 {
+    this->children.clear();
+    this->is_resolved = true;
     this->type = Jpp::JSON_STRING;
     this->value = std::string(str);
 
@@ -49,6 +53,8 @@ Jpp::Json &Jpp::Json::operator=(const char str[])
 
 Jpp::Json &Jpp::Json::operator=(bool val)
 {
+    this->children.clear();
+    this->is_resolved = true;
     this->type = Jpp::JSON_BOOLEAN;
     this->value = val;
 
@@ -57,6 +63,8 @@ Jpp::Json &Jpp::Json::operator=(bool val)
 
 Jpp::Json &Jpp::Json::operator=(double num)
 {
+    this->children.clear();
+    this->is_resolved = true;
     this->type = Jpp::JSON_NUMBER;
     this->value = num;
 
@@ -65,9 +73,35 @@ Jpp::Json &Jpp::Json::operator=(double num)
 
 Jpp::Json &Jpp::Json::operator=(int num)
 {
+    this->children.clear();
+    this->is_resolved = true;
     this->type = Jpp::JSON_NUMBER;
     this->value = static_cast<double>(num);
 
+    return *this;
+}
+
+Jpp::Json &Jpp::Json::operator=(std::vector<std::any> array)
+{
+    this->children.clear();
+    this->type = Jpp::JSON_ARRAY;
+    this->is_resolved = true;
+    for (size_t i = 0; i < array.size(); ++i)
+    {
+        this->children.emplace(std::to_string(i), Json(array[i]));
+    }
+    return *this;
+}
+
+Jpp::Json &Jpp::Json::operator=(std::vector<std::pair<std::string, std::any>> object)
+{
+    this->children.clear();
+    this->type = Jpp::JSON_OBJECT;
+    this->is_resolved = true;
+    for (size_t i = 0; i < object.size(); ++i)
+    {
+        this->children.emplace(object[i].first, Json(object[i].second));
+    }
     return *this;
 }
 
@@ -78,12 +112,14 @@ void Jpp::Json::parse(const std::string &json_string)
     if (json_string[start] == '{')
     {
         this->children = parse_object(json_string, start);
+        this->unresolved_string = "";
         this->type = Jpp::JSON_OBJECT;
         return;
     }
     if (json_string[start] == '[')
     {
         this->children = parse_array(json_string, start);
+        this->unresolved_string = "";
         this->type = Jpp::JSON_ARRAY;
         return;
     }
@@ -108,7 +144,7 @@ Jpp::Json Jpp::Json::get_unresolved_object(std::string_view str, size_t &index, 
         index++;
         if (index >= str.length())
             throw std::runtime_error("Unexpected end of the string");
-        
+
         switch (str[index])
         {
         case '"':
@@ -157,7 +193,7 @@ Jpp::Json Jpp::Json::get_unresolved_object(std::string_view str, size_t &index, 
         case ']':
             if (str[index] != end)
                 break;
-            if (!is_string )
+            if (!is_string)
             {
                 if (level == 0)
                     cycle = false;

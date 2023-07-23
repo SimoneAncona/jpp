@@ -8,6 +8,10 @@ std::string read_string_from_file(const std::string &);
 
 int main(int argc, char **argv)
 {
+    std::any a1 = std::string("ciao");
+    std::cout << a1.type().hash_code() << std::endl;
+    std::any a2 = (int)1;
+    std::cout << a2.type().hash_code() << std::endl;
     try
     {
         Jpp::Json json;
@@ -94,6 +98,21 @@ int main(int argc, char **argv)
         }
         t2 = time(0);
         std::cout << t2 - t1 << "s" << std::endl;
+
+        std::cout << "started for each loop and serialization test" << std::endl;
+        t1 = time(0);
+        for (auto c : e2)
+        {
+            c.second.to_string();
+        }
+        t2 = time(0);
+        std::cout << t2 - t1 << "s" << std::endl;
+
+        Jpp::Json literal_array = l_array{1, "wow", 5, 10.234, "hello"};
+        std::cout << literal_array.to_string() << std::endl;
+
+        Jpp::Json literal_object = l_object{{"name", "Franz"}, {"surname", "Kafka"}, {"birth", 1883}};
+        std::cout << literal_object.to_string() << std::endl;
     }
     catch (const std::exception e)
     {

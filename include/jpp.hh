@@ -2,7 +2,7 @@
  * @file json.hh
  * @author Simone Ancona
  * @brief A JSON parser for C++
- * @version 1.3.2
+ * @version 1.4
  * @date 2023-07-23
  *
  * @copyright Copyright (c) 2023
@@ -17,6 +17,9 @@
 #include <any>
 #include <cctype>
 #include <vector>
+
+#define l_object std::vector<std::pair<std::string, std::any>>
+#define l_array std::vector<std::any>
 
 namespace Jpp
 {
@@ -130,12 +133,23 @@ namespace Jpp
         Json get_unresolved_object(std::string_view, size_t &, bool);
 
     public:
+        /**
+         * @brief Construct a new Json object
+         * @since v1.0
+         */
         inline Json() noexcept
         {
             this->type = JSON_OBJECT;
             this->is_resolved = true;
         }
 
+        /**
+         * @brief Construct a new Json object
+         * 
+         * @param children 
+         * @param type 
+         * @since v1.0
+         */
         inline Json(std::map<std::string, Json> children, JsonType type) noexcept
         {
             this->children = children;
@@ -143,6 +157,13 @@ namespace Jpp
             this->is_resolved = true;
         }
 
+        /**
+         * @brief Construct a new Json object
+         * 
+         * @param value 
+         * @param type 
+         * @since v1.0
+         */
         inline Json(std::any value, JsonType type) noexcept
         {
             this->value = value;
@@ -150,6 +171,93 @@ namespace Jpp
             this->is_resolved = true;
         }
 
+        /**
+         * @brief Construct a new Json object
+         * 
+         * @param values 
+         * @since v1.4
+         */
+        inline Json(std::vector<std::any> values)
+        {
+            this->type = JSON_ARRAY;
+            this->is_resolved = true;
+            for (size_t i = 0; i < values.size(); ++i)
+            {
+                this->children.emplace(std::to_string(i), Json(values[i]));
+            }
+        }
+
+        /**
+         * @brief Construct a new Json object
+         * 
+         * @param key_values 
+         * @since v1.4
+         */
+        inline Json(std::vector<std::pair<std::string, std::any>> key_values)
+        {
+            this->type = JSON_OBJECT;
+            this->is_resolved = true;
+            for (size_t i = 0; i < key_values.size(); ++i)
+            {
+                this->children.emplace(key_values[i].first, Json(key_values[i].second));
+            }
+        }
+
+        /**
+         * @brief Construct a new Json object
+         * 
+         * @param value 
+         * @since v1.4
+         */
+        inline Json(std::any value)
+        {
+            this->is_resolved = true;
+            size_t hash = value.type().hash_code();
+            if (hash == typeid(int).hash_code())
+            {
+                this->value = static_cast<double>(std::any_cast<int>(value));
+                this->type = JSON_NUMBER;
+                return;
+            }
+            if (hash == typeid(const char *).hash_code())
+            {
+                this->value = std::string(std::any_cast<const char *>(value));
+                this->type = JSON_STRING;
+                return;
+            }
+            if (hash == typeid(std::string).hash_code())
+            {
+                this->value = value;
+                this->type = JSON_STRING;
+                return;
+            }
+            if (hash == typeid(bool).hash_code())
+            {
+                this->value = value;
+                this->type = JSON_BOOLEAN;
+                return;
+            }
+            if (hash == typeid(double).hash_code())
+            {
+                this->value = value;
+                this->type = JSON_NUMBER;
+                return;
+            }
+            if (hash == typeid(nullptr_t).hash_code())
+            {
+                this->value = value;
+                this->type = JSON_NULL;
+                return;
+            }
+            throw std::runtime_error("Unknown type: " + std::string(value.type().name()));
+        }
+
+        /**
+         * @brief Construct a new Json object
+         * 
+         * @param str 
+         * @since v1.0
+         */
         inline Json(std::string str) noexcept
         {
             this->value = str;
@@ -157,6 +265,12 @@ namespace Jpp
             this->is_resolved = true;
         }
 
+        /**
+         * @brief Construct a new Json object
+         * 
+         * @param num 
+         * @since v1.0
+         */
         inline Json(double num) noexcept
         {
             this->value = num;
@@ -164,6 +278,12 @@ namespace Jpp
             this->is_resolved = true;
         }
 
+        /**
+         * @brief Construct a new Json object
+         * 
+         * @param val 
+         * @since v1.0
+         */
         inline Json(bool val) noexcept
         {
             this->value = val;
@@ -171,6 +291,12 @@ namespace Jpp
             this->is_resolved = true;
         }
 
+        /**
+         * @brief Construct a new Json object
+         * 
+         * @param null 
+         * @since v1.0
+         */
         inline Json(nullptr_t null) noexcept
         {
             this->value = null;
@@ -266,7 +392,7 @@ namespace Jpp
          * @brief Parse a JSON string
          * @since v1.0
          */
-        void parse(const std::string&);
+        void parse(const std::string &);
 
         /**
          * @brief Get the children object
@@ -329,6 +455,18 @@ namespace Jpp
          * @since v1.0
          */
         Json &operator=(const char[]);
+
+        /**
+         * @return Json&
+         * @since v1.4
+         */
+        Json &operator=(std::vector<std::any>);
+
+        /**
+         * @return Json& 
+         * @since v1.4
+         */
+        Json &operator=(std::vector<std::pair<std::string, std::any>>);
 
         /**
          * @brief Convert the JSON object to its JSON representation.
