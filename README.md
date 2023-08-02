@@ -79,7 +79,7 @@ int main(int argc, char **argv)
 
 ## Step 4
 
-In this final test we will see how to create a JSON object from literals
+In this final step we will see how to create a JSON object from literals
 
 ```c++
 #include "jpp.hh"
