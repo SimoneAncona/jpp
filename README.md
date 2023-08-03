@@ -12,7 +12,7 @@ This library allows you to parse JSON strings
 In this step we will see how to parse a simple JSON string
 
 ```c++
-#include "json.hh"
+#include "jpp.hh"
 #include <iostream>
 
 int main(int argc, char **argv)
@@ -31,7 +31,7 @@ int main(int argc, char **argv)
 Now we will see how to access to our json object
 
 ```c++
-#include "json.hh"
+#include "jpp.hh"
 #include <iostream>
 
 int main(int argc, char **argv)
@@ -60,7 +60,7 @@ int main(int argc, char **argv)
 In this step we will see how to create a JSON object from zero
 
 ```c++
-#include "json.hh"
+#include "jpp.hh"
 #include <iostream>
 
 int main(int argc, char **argv)
@@ -72,6 +72,28 @@ int main(int argc, char **argv)
     car["model"] = "Model1";
 
     car_collection["favoriteCar"] = car;
+    std::cout << car_collection.to_string() << std::endl;    // expected output: {"favoriteCar":{"age":10.000000, "brand":"Brand1", "model":"Model1"}}
+    return 0;
+}
+```
+
+## Step 4
+
+In this final step we will see how to create a JSON object from literals
+
+```c++
+#include "jpp.hh"
+#include <iostream>
+
+int main(int argc, char **argv)
+{
+    Jpp::Json my_object = l_object{
+        {"title", "Der Process"},
+        {"year", 1925},
+        {"author": "Franz Kafka"}
+    };
+
+    Jpp::Json my_array = l_array{0, 1, 2, 10, 123.43, 2322.111};
     return 0;
 }
 ```
