@@ -90,7 +90,7 @@ int main(int argc, char **argv)
     Jpp::Json my_object = l_object{
         {"title", "Der Process"},
         {"year", 1925},
-        {"author": "Franz Kafka"}
+        {"author", "Franz Kafka"}
     };
 
     Jpp::Json my_array = l_array{0, 1, 2, 10, 123.43, 2322.111};
