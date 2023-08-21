@@ -8,10 +8,6 @@ std::string read_string_from_file(const std::string &);
 
 int main(int argc, char **argv)
 {
-    std::any a1 = std::string("ciao");
-    std::cout << a1.type().hash_code() << std::endl;
-    std::any a2 = (int)1;
-    std::cout << a2.type().hash_code() << std::endl;
     try
     {
         Jpp::Json json;
