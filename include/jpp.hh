@@ -613,7 +613,7 @@ namespace Jpp
                 this->type = JSON_NUMBER;
                 return;
             }
-            if (hash == typeid(nullptr_t).hash_code())
+            if (hash == typeid(std::nullptr_t).hash_code())
             {
                 this->value = value;
                 this->type = JSON_NULL;
