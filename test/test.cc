@@ -104,11 +104,11 @@ int main(int argc, char **argv)
         t2 = time(0);
         std::cout << t2 - t1 << "s" << std::endl;
 
-        Jpp::Json literal_array = l_array{1, "wow", 5, 10.234, "hello"};
-        std::cout << literal_array.to_string() << std::endl;
+        // Jpp::Json literal_array = l_array{1, "wow", 5, 10.234, "hello"};
+        // std::cout << literal_array.to_string() << std::endl;
 
-        Jpp::Json literal_object = l_object{{"name", "Franz"}, {"surname", "Kafka"}, {"birth", 1883}};
-        std::cout << literal_object.to_string() << std::endl;
+        // Jpp::Json literal_object = l_object{{"name", "Franz"}, {"surname", "Kafka"}, {"birth", 1883}};
+        // std::cout << literal_object.to_string() << std::endl;
     }
     catch (const std::exception e)
     {

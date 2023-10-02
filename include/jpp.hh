@@ -356,7 +356,7 @@ namespace Jpp
                 ++index;
         }
 
-        inline std::string json_object_to_string(Json json)
+        inline std::string json_object_to_string(const Json &json)
         {
             std::map<std::string, Jpp::Json> children = json.children;
             if (children.size() == 0)
@@ -379,7 +379,7 @@ namespace Jpp
             return str + "}";
         }
 
-        inline std::string json_array_to_string(Json json)
+        inline std::string json_array_to_string(const Json &json)
         {
             std::map<std::string, Jpp::Json> children = json.children;
             if (children.size() == 0)
@@ -667,7 +667,7 @@ namespace Jpp
          * @param null
          * @since v1.0
          */
-        inline Json(nullptr_t null) noexcept
+        inline Json(std::nullptr_t null) noexcept
         {
             this->value = null;
             this->type = JSON_NULL;
